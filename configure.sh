@@ -55,18 +55,8 @@ sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resourc
 brew update
 brew install python3
 
-# websockify removed from Homebrew — install via pip with --break-system-packages
-# (macOS runners have PEP 668 externally-managed-environment protection)
-pip3 install --break-system-packages numpy 2>/dev/null || pip3 install numpy 2>/dev/null || true
-pip3 install --break-system-packages websockify 2>/dev/null || pip3 install websockify 2>/dev/null || true
-
-# If pip still fails, use pipx instead
-if ! python3 -c "import websockify" 2>/dev/null; then
-  brew install pipx 2>/dev/null || true
-  pipx install websockify 2>/dev/null || true
-fi
-
 # Clone noVNC directly from GitHub (removed from Homebrew)
+# websockify bundled with noVNC by cloning into utils/
 NOVNC_DIR="/opt/noVNC"
 if [ ! -d "$NOVNC_DIR" ]; then
   sudo git clone --depth=1 https://github.com/novnc/noVNC.git "$NOVNC_DIR"

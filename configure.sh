@@ -51,6 +51,30 @@ sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resourc
 sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart \
   -activate
 
+# Force display on, prevent sleep
+sudo pmset -a displaysleep 0 sleep 0 2>/dev/null || true
+sudo pmset -a force 2>/dev/null || true
+
+# Pre-create the user's home directory if missing
+if [ ! -d "/Users/ledinhhuy" ]; then
+  sudo createhomedir -c -u ledinhhuy 2>/dev/null || true
+fi
+
+# Switch to macOS login screen so VNC shows the login window instead of black
+# CGSession -suspend is the official macOS way to show the login screen
+CGSESSION="/System/Library/CoreServices/Menu Extras/User.menu/Contents/Resources/CGSession"
+if [ -f "$CGSESSION" ]; then
+  sudo "$CGSESSION" -suspend 2>/dev/null || true
+  sleep 2
+fi
+
+# Fallback: if CGSession didn't work, auto-login ledinhhuy directly
+if ! pgrep -q loginwindow; then
+  echo "loginwindow not running, triggering auto-login for ledinhhuy..."
+  sudo launchctl asuser $(dscl . -read /Users/ledinhhuy UniqueID 2>/dev/null | awk '{print $2}') \
+    open -b com.apple.systempreferences 2>/dev/null || true
+fi
+
 # Install noVNC + websockify so Cloudflare can publish an HTTP URL
 # python@3.14 is pre-installed on macOS runners
 

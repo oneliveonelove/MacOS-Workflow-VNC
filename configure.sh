@@ -52,8 +52,7 @@ sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resourc
   -activate
 
 # Install noVNC + websockify so Cloudflare can publish an HTTP URL
-brew update
-brew install python3
+# python@3.14 is pre-installed on macOS runners
 
 # Clone noVNC directly from GitHub (removed from Homebrew)
 # websockify bundled with noVNC by cloning into utils/

@@ -58,10 +58,9 @@ brew install python3
 # Clone noVNC directly from GitHub (removed from Homebrew)
 # websockify bundled with noVNC by cloning into utils/
 NOVNC_DIR="/opt/noVNC"
-if [ ! -d "$NOVNC_DIR" ]; then
-  sudo git clone --depth=1 https://github.com/novnc/noVNC.git "$NOVNC_DIR"
-  sudo git clone --depth=1 https://github.com/novnc/websockify.git "$NOVNC_DIR/utils/websockify"
-fi
+sudo rm -rf "$NOVNC_DIR"
+sudo git clone --depth=1 https://github.com/novnc/noVNC.git "$NOVNC_DIR"
+sudo git clone --depth=1 https://github.com/novnc/websockify.git "$NOVNC_DIR/utils/websockify"
 
 # Create a wrapper command so novnc_proxy is always findable
 NOVNC_PROXY="$NOVNC_DIR/utils/novnc_proxy"

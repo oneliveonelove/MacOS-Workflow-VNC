@@ -31,7 +31,6 @@ jobs:
       - name: Install cloudflared
         run: |
           set -euo pipefail
-          brew update
           brew install cloudflared
 
       - name: Start Cloudflare Quick Tunnel and print URL
@@ -49,13 +48,19 @@ jobs:
           cloudflared tunnel --url "$TARGET_URL" --no-autoupdate 2>&1 | tee "$LOG_FILE" &
           CF_PID=$!
 
+          echo "⏳ Đang chờ Cloudflare tunnel (kiểm tra mỗi 3s, timeout 5 phút)..."
+
           TUNNEL_URL=""
-          for i in {1..90}; do
+          for i in {1..100}; do
             TUNNEL_URL="$(grep -Eo 'https://[-a-zA-Z0-9]+\.trycloudflare\.com' "$LOG_FILE" | head -n1 || true)"
             if [ -n "$TUNNEL_URL" ]; then
+              echo ✅ Tunnel ready
               break
             fi
-            sleep 2
+            if (( i % 5 == 0 )); then
+              echo "  ⌛ still waiting... ($(( i * 3 ))s elapsed)"
+            fi
+            sleep 3
           done
 
           if [ -z "$TUNNEL_URL" ]; then

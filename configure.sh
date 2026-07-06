@@ -53,24 +53,21 @@ sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resourc
 
 # Install noVNC + websockify so Cloudflare can publish an HTTP URL
 brew update
-brew install python3 websockify
+brew install python3
 
-# noVNC removed from Homebrew — install via npm or directly from GitHub
-if ! command -v novnc_proxy &>/dev/null; then
-  if command -v npm &>/dev/null; then
-    npm install -g @kasmweb/novnc
-  else
-    brew install node
-    npm install -g @kasmweb/novnc
-  fi
+# websockify removed from Homebrew — install via pip
+pip3 install numpy
+pip3 install websockify
+
+# Clone noVNC directly from GitHub (removed from Homebrew)
+NOVNC_DIR="/opt/noVNC"
+if [ ! -d "$NOVNC_DIR" ]; then
+  sudo git clone --depth=1 https://github.com/novnc/noVNC.git "$NOVNC_DIR"
+  sudo git clone --depth=1 https://github.com/novnc/websockify.git "$NOVNC_DIR/utils/websockify"
 fi
 
-# Fallback: clone noVNC if npm install didn't place novnc_proxy
-if ! command -v novnc_proxy &>/dev/null; then
-  git clone --depth=1 https://github.com/novnc/noVNC.git /opt/noVNC
-  git clone --depth=1 https://github.com/novnc/websockify.git /opt/noVNC/utils/websockify
-  alias novnc_proxy='/opt/noVNC/utils/novnc_proxy'
-fi
+# Create a wrapper command so novnc_proxy is always findable
+NOVNC_PROXY="$NOVNC_DIR/utils/novnc_proxy"
 
 # Prepare logs
 mkdir -p "$HOME/novnc-logs"
@@ -81,14 +78,8 @@ pkill -f "novnc_proxy" || true
 
 # Start websockify/noVNC bridge
 # noVNC serves web UI on 6080 and proxies websocket traffic to local VNC 5900.
-nohup /opt/homebrew/bin/novnc_proxy --vnc 127.0.0.1:5900 --listen 6080 \
+nohup python3 "$NOVNC_PROXY" --vnc 127.0.0.1:5900 --listen 6080 \
   > "$HOME/novnc-logs/novnc.log" 2>&1 &
-
-# Fallback path for Intel runners just in case
-if ! lsof -iTCP:6080 -sTCP:LISTEN >/dev/null 2>&1; then
-  nohup /usr/local/bin/novnc_proxy --vnc 127.0.0.1:5900 --listen 6080 \
-    > "$HOME/novnc-logs/novnc.log" 2>&1 &
-fi
 
 # Wait for noVNC web UI
 for i in {1..60}; do

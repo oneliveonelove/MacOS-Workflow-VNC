@@ -31,6 +31,7 @@ jobs:
       - name: Install cloudflared
         run: |
           set -euo pipefail
+          export HOMEBREW_NO_REQUIRE_TAP_TRUST=1
           brew install cloudflared
 
       - name: Start Cloudflare Quick Tunnel and print URL
@@ -45,7 +46,7 @@ jobs:
 
           LOG_FILE="$(mktemp)"
 
-          cloudflared tunnel --url "$TARGET_URL" --no-autoupdate 2>&1 | tee "$LOG_FILE" &
+          cloudflared tunnel --url "$TARGET_URL" --no-autoupdate --protocol http2 2>&1 | tee "$LOG_FILE" &
           CF_PID=$!
 
           echo "⏳ Đang chờ Cloudflare tunnel (kiểm tra mỗi 3s, timeout 5 phút)..."

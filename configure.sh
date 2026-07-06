@@ -53,7 +53,24 @@ sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resourc
 
 # Install noVNC + websockify so Cloudflare can publish an HTTP URL
 brew update
-brew install python3 novnc websockify
+brew install python3 websockify
+
+# noVNC removed from Homebrew — install via npm or directly from GitHub
+if ! command -v novnc_proxy &>/dev/null; then
+  if command -v npm &>/dev/null; then
+    npm install -g @kasmweb/novnc
+  else
+    brew install node
+    npm install -g @kasmweb/novnc
+  fi
+fi
+
+# Fallback: clone noVNC if npm install didn't place novnc_proxy
+if ! command -v novnc_proxy &>/dev/null; then
+  git clone --depth=1 https://github.com/novnc/noVNC.git /opt/noVNC
+  git clone --depth=1 https://github.com/novnc/websockify.git /opt/noVNC/utils/websockify
+  alias novnc_proxy='/opt/noVNC/utils/novnc_proxy'
+fi
 
 # Prepare logs
 mkdir -p "$HOME/novnc-logs"

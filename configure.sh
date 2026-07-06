@@ -11,17 +11,17 @@ VNC_PASSWORD="${2:?missing VNC password}"
 sudo mdutil -i off -a || true
 
 # Create user if it does not exist
-if ! id -u vncuser >/dev/null 2>&1; then
-  sudo dscl . -create /Users/vncuser
-  sudo dscl . -create /Users/vncuser UserShell /bin/bash
-  sudo dscl . -create /Users/vncuser RealName "VNC User"
-  sudo dscl . -create /Users/vncuser UniqueID 1001
-  sudo dscl . -create /Users/vncuser PrimaryGroupID 80
-  sudo dscl . -create /Users/vncuser NFSHomeDirectory /Users/vncuser
-  sudo dscl . -passwd /Users/vncuser "$VNC_USER_PASSWORD"
-  sudo createhomedir -c -u vncuser >/dev/null
+if ! id -u ledinhhuy >/dev/null 2>&1; then
+  sudo dscl . -create /Users/ledinhhuy
+  sudo dscl . -create /Users/ledinhhuy UserShell /bin/bash
+  sudo dscl . -create /Users/ledinhhuy RealName "ledinhhuy"
+  sudo dscl . -create /Users/ledinhhuy UniqueID 1001
+  sudo dscl . -create /Users/ledinhhuy PrimaryGroupID 80
+  sudo dscl . -create /Users/ledinhhuy NFSHomeDirectory /Users/ledinhhuy
+  sudo dscl . -passwd /Users/ledinhhuy "$VNC_USER_PASSWORD"
+  sudo createhomedir -c -u ledinhhuy >/dev/null
 else
-  sudo dscl . -passwd /Users/vncuser "$VNC_USER_PASSWORD"
+  sudo dscl . -passwd /Users/ledinhhuy "$VNC_USER_PASSWORD"
 fi
 
 # Enable VNC / Apple Remote Desktop
@@ -80,7 +80,7 @@ nohup bash "$WEBSOCKIFY_DIR/run" 6080 --web "$NOVNC_DIR" 127.0.0.1:5900 \
 # Wait for noVNC web UI
 for i in {1..60}; do
   if curl -fsS http://127.0.0.1:6080/vnc.html >/dev/null 2>&1; then
-    echo "noVNC is listening on http://127.0.0.1:6080/vnc.html"
+    echo "User ledinhhuy ready / already exists"
     exit 0
   fi
   sleep 2

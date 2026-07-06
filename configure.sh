@@ -75,9 +75,8 @@ pkill -f "novnc_proxy" || true
 # Use websockify Python module directly (websockify/run is a bash script)
 # websockify serves noVNC web UI on port 6080 and proxies WebSocket to VNC 5900
 WEBSOCKIFY_DIR="$NOVNC_DIR/utils/websockify"
-cd "$WEBSOCKIFY_DIR" && nohup bash ./run 6080 --web "$NOVNC_DIR" 127.0.0.1:5900 \
+nohup bash "$WEBSOCKIFY_DIR/run" 6080 --web "$NOVNC_DIR" 127.0.0.1:5900 \
   > "$HOME/novnc-logs/novnc.log" 2>&1 &
-cd - >/dev/null
 
 # Wait for noVNC web UI
 for i in {1..60}; do
